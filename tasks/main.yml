@@ -1,0 +1,40 @@
+---
+- name: install python3
+  package:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - python3-minimal
+    - python3-pip
+
+- name: update-alternatives install python2
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python2
+    priority: 30
+  check_mode: no
+
+# last executed one gets also set
+- name: update-alternatives install python3 (default)
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python3
+    priority: 70
+
+- name: update-alternatives install pip2
+  alternatives:
+    name: pip
+    link: /usr/bin/pip
+    path: /usr/bin/pip2
+    priority: 30
+  check_mode: no
+
+# last executed one gets also set
+- name: update-alternatives install pip3 (default)
+  alternatives:
+    name: pip
+    link: /usr/bin/pip
+    path: /usr/bin/pip3
+    priority: 70
