@@ -1,5 +1,6 @@
 ---
 - name: install python3
+  become: yes
   package:
     name: "{{item}}"
     state: present
@@ -8,6 +9,7 @@
     - python3-pip
 
 - name: update-alternatives install python2
+  become: yes
   alternatives:
     name: python
     link: /usr/bin/python
@@ -17,6 +19,7 @@
 
 # last executed one gets also set
 - name: update-alternatives install python3 (default)
+  become: yes
   alternatives:
     name: python
     link: /usr/bin/python
@@ -24,6 +27,7 @@
     priority: 70
 
 - name: update-alternatives install pip2
+  become: yes
   alternatives:
     name: pip
     link: /usr/bin/pip
@@ -33,6 +37,7 @@
 
 # last executed one gets also set
 - name: update-alternatives install pip3 (default)
+  become: yes
   alternatives:
     name: pip
     link: /usr/bin/pip
