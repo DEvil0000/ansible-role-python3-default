@@ -34,6 +34,7 @@
     path: /usr/bin/pip2
     priority: 30
   check_mode: no
+  when: not (ignore_pip2 | bool)
 
 # last executed one gets also set
 - name: update-alternatives install pip3 (default)
