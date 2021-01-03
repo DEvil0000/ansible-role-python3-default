@@ -4,73 +4,19 @@
     path: /usr/bin/python2
   register: py2_stat_result
 
-- name: install python3
-  become: yes
-  package:
-    name: python3-minimal
-    state: present
+- name: configure python3 as default python
+  block:
+    - name: try package installation method
+      import_tasks: package.yml
+  rescue:
+    - name: use update alternatives method
+      import_tasks: alternatives.yml
   when:
-    - py2_stat_result.stat.exists
-    - python3_default_install_python3 | bool
-  
-- name: install pip3
-  become: yes
-  package:
-    name: python3-pip
-    state: present
-  when:
-    - py2_stat_result.stat.exists
-    - python3_default_install_pip3 | bool
-
-- name: update-alternatives install python2
-  become: yes
-  alternatives:
-    name: python
-    link: /usr/bin/python
-    path: /usr/bin/python2
-    priority: 30
-  check_mode: no
-  when:
+    - python3_default_try_package_method | bool
     - py2_stat_result.stat.exists
 
-# last executed one gets also set
-- name: update-alternatives install python3 (default)
-  become: yes
-  alternatives:
-    name: python
-    link: /usr/bin/python
-    path: /usr/bin/python3
-    priority: 70
+- name: use update alternatives method
+  import_tasks: alternatives.yml
   when:
+    - not python3_default_try_package_method | bool
     - py2_stat_result.stat.exists
-
-- name: is pip2 installed
-  stat:
-    path: /usr/bin/pip2
-  register: pip2_stat_result
-  when:
-    - py2_stat_result.stat.exists
-
-- name: update-alternatives install pip2
-  become: yes
-  alternatives:
-    name: pip
-    link: /usr/bin/pip
-    path: /usr/bin/pip2
-    priority: 30
-  check_mode: no
-  when:
-    - py2_stat_result.stat.exists
-    - pip2_stat_result.stat.exists
-
-# last executed one gets also set
-- name: update-alternatives install pip3 (default)
-  become: yes
-  alternatives:
-    name: pip
-    link: /usr/bin/pip
-    path: /usr/bin/pip3
-    priority: 70
-  when:
-    - py2_stat_result.stat.exists
-    - pip2_stat_result.stat.exists
