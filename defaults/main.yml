@@ -2,5 +2,3 @@
 python3_default_install: true
 python3_default_install_python3: "{{ python3_default_install }}"
 python3_default_install_pip3: "{{ python3_default_install }}"
-
-ignore_pip2: true

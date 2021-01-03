@@ -1,17 +1,26 @@
 ---
+- name: is python2 installed
+  stat:
+    path: /usr/bin/python2
+  register: py2_stat_result
+
 - name: install python3
   become: yes
   package:
     name: python3-minimal
     state: present
-  when: python3_default_install_python3 | bool
+  when:
+    - py2_stat_result.stat.exists
+    - python3_default_install_python3 | bool
   
 - name: install pip3
   become: yes
   package:
     name: python3-pip
     state: present
-  when: python3_default_install_pip3 | bool
+  when:
+    - py2_stat_result.stat.exists
+    - python3_default_install_pip3 | bool
 
 - name: update-alternatives install python2
   become: yes
@@ -21,6 +30,8 @@
     path: /usr/bin/python2
     priority: 30
   check_mode: no
+  when:
+    - py2_stat_result.stat.exists
 
 # last executed one gets also set
 - name: update-alternatives install python3 (default)
@@ -30,6 +41,15 @@
     link: /usr/bin/python
     path: /usr/bin/python3
     priority: 70
+  when:
+    - py2_stat_result.stat.exists
+
+- name: is pip2 installed
+  stat:
+    path: /usr/bin/pip2
+  register: pip2_stat_result
+  when:
+    - py2_stat_result.stat.exists
 
 - name: update-alternatives install pip2
   become: yes
@@ -39,7 +59,9 @@
     path: /usr/bin/pip2
     priority: 30
   check_mode: no
-  when: not (ignore_pip2 | bool)
+  when:
+    - py2_stat_result.stat.exists
+    - pip2_stat_result.stat.exists
 
 # last executed one gets also set
 - name: update-alternatives install pip3 (default)
@@ -49,3 +71,6 @@
     link: /usr/bin/pip
     path: /usr/bin/pip3
     priority: 70
+  when:
+    - py2_stat_result.stat.exists
+    - pip2_stat_result.stat.exists
