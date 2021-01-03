@@ -2,11 +2,16 @@
 - name: install python3
   become: yes
   package:
-    name: "{{item}}"
+    name: python3-minimal
     state: present
-  with_items:
-    - python3-minimal
-    - python3-pip
+  when: python3_default_install_python3 | bool
+  
+- name: install pip3
+  become: yes
+  package:
+    name: python3-pip
+    state: present
+  when: python3_default_install_pip3 | bool
 
 - name: update-alternatives install python2
   become: yes
